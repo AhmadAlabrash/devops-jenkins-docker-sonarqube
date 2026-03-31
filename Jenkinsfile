@@ -2,17 +2,18 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION      = 'eu-central-1'
-        AWS_ACCOUNT_ID  = '612990353866'
-        ECR_REPO        = 'my-nodejs-app'
-        EKS_CLUSTER     = 'nodejs-lofi-walrus'
-        APP_DIR         = 'Nodejs App'
-        IMAGE_TAG       = "${BUILD_NUMBER}"
-        IMAGE_URI       = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
-        IMAGE_LATEST    = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest"
-        DEPLOYMENT_NAME = 'my-nodejs-app'
-        CONTAINER_NAME  = 'my-nodejs-app'
-        SONAR_PROJECT_KEY = 'my-nodejs-app'
+        AWS_REGION         = 'eu-central-1'
+        AWS_ACCOUNT_ID     = '612990353866'
+        ECR_REPO           = 'my-nodejs-app'
+        EKS_CLUSTER        = 'nodejs-lofi-walrus'
+        APP_DIR            = 'Nodejs App'
+        IMAGE_TAG          = "${BUILD_NUMBER}"
+        IMAGE_URI          = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
+        IMAGE_LATEST       = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest"
+        HELM_RELEASE       = 'my-nodejs-app'
+        HELM_CHART_PATH    = './helm/my-nodejs-app'
+        HELM_NAMESPACE     = 'default'
+        SONAR_PROJECT_KEY  = 'my-nodejs-app'
         SONAR_PROJECT_NAME = 'my-nodejs-app'
     }
 
@@ -25,6 +26,7 @@ pipeline {
                     docker --version
                     aws --version
                     kubectl version --client
+                    helm version
                 '''
             }
         }
@@ -44,7 +46,8 @@ pipeline {
                 }
             }
         }
-                stage('SonarQube Scan') {
+
+        stage('SonarQube Scan') {
             steps {
                 dir("${APP_DIR}") {
                     withSonarQubeEnv('sonarqube-server') {
@@ -81,7 +84,7 @@ pipeline {
             }
         }
 
-        stage('Push to ECR and Deploy to EKS') {
+        stage('Push Image to ECR') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -90,23 +93,47 @@ pipeline {
                     sh """
                         aws sts get-caller-identity
 
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                        docker login --username AWS --password-stdin \
+                        ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
                         docker push ${IMAGE_URI}
                         docker push ${IMAGE_LATEST}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to EKS with Helm') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
+                    sh """
+                        unset KUBECONFIG
+                        unset KUBERNETES_MASTER
+                        unset KUBE_MASTER
+                        unset HELM_KUBEAPISERVER
+                        unset HELM_KUBETOKEN
+                        unset HELM_KUBECAFILE
+                        unset HELM_KUBEINSECURE_SKIP_TLS_VERIFY
 
                         aws eks update-kubeconfig --region ${AWS_REGION} --name ${EKS_CLUSTER}
+
                         kubectl get nodes
+                        helm lint ${HELM_CHART_PATH}
 
-                        kubectl get deployment ${DEPLOYMENT_NAME} >/dev/null 2>&1 || kubectl create deployment ${DEPLOYMENT_NAME} --image=${IMAGE_URI}
+                        helm upgrade --install ${HELM_RELEASE} ${HELM_CHART_PATH} \
+                          --namespace ${HELM_NAMESPACE} \
+                          --create-namespace \
+                          --set image.repository=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO} \
+                          --set image.tag=${BUILD_NUMBER} \
+                          --kubeconfig /var/lib/jenkins/.kube/config
 
-                        kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_URI}
-
-                        kubectl expose deployment ${DEPLOYMENT_NAME} --type=LoadBalancer --port=80 --target-port=3000 || true
-
-                        kubectl rollout status deployment/${DEPLOYMENT_NAME}
-                        kubectl get pods
-                        kubectl get svc
+                        kubectl get pods -n ${HELM_NAMESPACE}
+                        kubectl get svc -n ${HELM_NAMESPACE}
+                        helm list -n ${HELM_NAMESPACE} --kubeconfig /var/lib/jenkins/.kube/config
                     """
                 }
             }
@@ -115,7 +142,7 @@ pipeline {
 
     post {
         success {
-            echo 'ECR push and EKS deploy done successfully'
+            echo 'ECR push and Helm deploy to EKS done successfully'
         }
         failure {
             echo 'Pipeline failed'
