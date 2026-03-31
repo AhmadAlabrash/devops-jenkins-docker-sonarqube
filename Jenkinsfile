@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         AWS_REGION   = 'eu-central-1'
-        AWS_ACCOUNT_ID = '123456789012'
+        AWS_ACCOUNT_ID = '612990353866'
         ECR_REPO     = 'my-nodejs-app'
-        EKS_CLUSTER  = 'your-eks-cluster'
+        EKS_CLUSTER  = 'nodejs-lofi-walrus'
         APP_DIR      = 'Nodejs App'
         IMAGE_TAG    = "${BUILD_NUMBER}"
         IMAGE_URI    = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
