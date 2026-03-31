@@ -1,26 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node.js SPA Project</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirgato Library</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div id="app">
-        <div id="scrolling-text">
-            <p>Congratulations on your Node.js project!</p>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+  <div class="bg-glow glow-3"></div>
+
+  <div class="page">
+    <header class="navbar">
+      <div class="brand">
+        <h1>Mirgato</h1>
+        <p>Digital Library Website</p>
+      </div>
+
+      <nav class="top-tabs">
+        <button class="tab-btn active" data-tab="home">Home</button>
+        <button class="tab-btn" data-tab="catalog">Catalog</button>
+        <button class="tab-btn" data-tab="members">Members</button>
+        <button class="tab-btn" data-tab="contact">Contact</button>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section class="hero-left">
+        <div class="badge">Premium landing page for Mirgato</div>
+
+        <h2 id="hero-title">A modern digital library for curious minds.</h2>
+        <p id="hero-description">
+          Mirgato brings books, research, and reading communities into one elegant library experience.
+          Fast discovery, beautiful organization, and a calm interface designed for readers.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#" class="btn btn-primary">Get Started</a>
+          <a href="#" class="btn btn-secondary">Explore Library</a>
         </div>
-        <div id="image-container"></div>
-        <img src="/images/nodejs-logo.png" alt="Node.js logo (fallback)" onerror="this.style.display='none'; console.error('Fallback image failed to load');">
-        <p id="debug-info"></p>
-    </div>
-    <script src="/imageDisplay.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const debugInfo = document.getElementById('debug-info');
-            debugInfo.textContent = `Your URL: ${window.location.origin}`;
-        });
-    </script>
+
+        <div class="feature-grid" id="feature-grid"></div>
+      </section>
+
+      <section class="hero-right">
+        <div class="dashboard-card">
+          <div class="dashboard-header">
+            <div>
+              <p class="muted">Mirgato Preview</p>
+              <h3>Library Dashboard</h3>
+            </div>
+            <span class="live-badge">Live</span>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <p class="muted">Books Available</p>
+              <h4>24k+</h4>
+            </div>
+            <div class="stat-box">
+              <p class="muted">Active Readers</p>
+              <h4>8.7k</h4>
+            </div>
+          </div>
+
+          <div class="shelf-list">
+            <div class="shelf-item">
+              <div>
+                <h5>Modern Literature</h5>
+                <p>Curated shelf #1</p>
+              </div>
+              <span>Open</span>
+            </div>
+
+            <div class="shelf-item">
+              <div>
+                <h5>Academic Journals</h5>
+                <p>Curated shelf #2</p>
+              </div>
+              <span>Open</span>
+            </div>
+
+            <div class="shelf-item">
+              <div>
+                <h5>Kids Collection</h5>
+                <p>Curated shelf #3</p>
+              </div>
+              <span>Open</span>
+            </div>
+
+            <div class="shelf-item">
+              <div>
+                <h5>Rare Archives</h5>
+                <p>Curated shelf #4</p>
+              </div>
+              <span>Open</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="bottom-tabs" id="bottom-tabs"></section>
+
+    <footer class="footer">
+      <p>© 2026 Mirgato. Crafted for a world-class library experience.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
