@@ -15,6 +15,18 @@ pipeline {
     }
 
     stages {
+        stage('Check Tools') {
+            steps {
+                sh '''
+                    node -v
+                    npm -v
+                    docker --version
+                    aws --version
+                    kubectl version --client
+                '''
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 dir("${APP_DIR}") {
@@ -46,15 +58,13 @@ pipeline {
         stage('Push to ECR and Deploy to EKS') {
             steps {
                 withCredentials([[
-                    \$class: 'AmazonWebServicesCredentialsBinding',
+                    $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-creds'
                 ]]) {
                     sh """
                         aws sts get-caller-identity
 
-                        aws ecr get-login-password --region ${AWS_REGION} | \
-                        docker login --username AWS --password-stdin \
-                        ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
                         docker push ${IMAGE_URI}
                         docker push ${IMAGE_LATEST}
@@ -62,14 +72,11 @@ pipeline {
                         aws eks update-kubeconfig --region ${AWS_REGION} --name ${EKS_CLUSTER}
                         kubectl get nodes
 
-                        kubectl get deployment ${DEPLOYMENT_NAME} >/dev/null 2>&1 || \
-                        kubectl create deployment ${DEPLOYMENT_NAME} --image=${IMAGE_URI}
+                        kubectl get deployment ${DEPLOYMENT_NAME} >/dev/null 2>&1 || kubectl create deployment ${DEPLOYMENT_NAME} --image=${IMAGE_URI}
 
-                        kubectl set image deployment/${DEPLOYMENT_NAME} \
-                        ${CONTAINER_NAME}=${IMAGE_URI}
+                        kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_URI}
 
-                        kubectl expose deployment ${DEPLOYMENT_NAME} \
-                        --type=LoadBalancer --port=80 --target-port=3000 || true
+                        kubectl expose deployment ${DEPLOYMENT_NAME} --type=LoadBalancer --port=80 --target-port=3000 || true
 
                         kubectl rollout status deployment/${DEPLOYMENT_NAME}
                         kubectl get pods
