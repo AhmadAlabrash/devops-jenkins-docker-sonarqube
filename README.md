@@ -20,6 +20,9 @@ The pipeline automates:
 GitHub → Jenkins → Test → SonarQube → Quality Gate → Docker → ECR → EKS (Helm)
 ```
 
+![Architecture Diagram](diagram/diagram-image.png)
+
+
 ---
 
 ## 🛠️ Technologies Used
