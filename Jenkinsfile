@@ -12,6 +12,8 @@ pipeline {
         IMAGE_LATEST    = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest"
         DEPLOYMENT_NAME = 'my-nodejs-app'
         CONTAINER_NAME  = 'my-nodejs-app'
+        SONAR_PROJECT_KEY = 'my-nodejs-app'
+        SONAR_PROJECT_NAME = 'my-nodejs-app'
     }
 
     stages {
@@ -39,6 +41,30 @@ pipeline {
             steps {
                 dir("${APP_DIR}") {
                     sh 'npm test'
+                }
+            }
+        }
+                stage('SonarQube Scan') {
+            steps {
+                dir("${APP_DIR}") {
+                    withSonarQubeEnv('sonarqube-server') {
+                        sh '''
+                            npx sonar-scanner \
+                              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                              -Dsonar.projectName="$SONAR_PROJECT_NAME" \
+                              -Dsonar.sources=src \
+                              -Dsonar.tests=tests \
+                              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
