@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Professional DevOps CI/CD Architecture</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+    .wrap {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+    }
+    .subtitle {
+      color: #4b5563;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      padding: 18px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .legend-item {
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .c1 { background: #e0ecff; }
+    .c2 { background: #e9f9ee; }
+    .c3 { background: #fff4db; }
+    .c4 { background: #f4e8ff; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+    }
+    .panel h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.65;
+    }
+    li { margin-bottom: 8px; }
+    code {
+      background: #eef2ff;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .footer {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+      .legend { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Professional DevOps CI/CD Architecture Diagram</h1>
+    <div class="subtitle">Node.js application delivery pipeline with GitHub, Jenkins, SonarQube, Docker, Amazon ECR, Amazon EKS, and Helm.</div>
+
+    <div class="card">
+      <svg viewBox="0 0 1580 860" width="100%" height="auto" aria-label="CI/CD architecture diagram">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#475569"></path>
+          </marker>
+          <style>
+            .title { font: 700 18px Inter, Arial, sans-serif; fill: #111827; }
+            .label { font: 600 14px Inter, Arial, sans-serif; fill: #111827; }
+            .text { font: 500 12px Inter, Arial, sans-serif; fill: #374151; }
+            .small { font: 500 11px Inter, Arial, sans-serif; fill: #4b5563; }
+            .box { rx: 18; ry: 18; stroke: #cbd5e1; stroke-width: 1.2; }
+            .arrow { stroke: #475569; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+            .dashed { stroke-dasharray: 7 6; }
+          </style>
+        </defs>
+
+        <text x="30" y="36" class="title">1. Source Control & Trigger Layer</text>
+        <rect x="30" y="55" width="250" height="130" class="box" fill="#e0ecff"/>
+        <text x="52" y="88" class="label">GitHub Repository</text>
+        <text x="52" y="112" class="text">Repo: devops-jenkins-docker-sonarqube</text>
+        <text x="52" y="132" class="text">Branches / commits / Jenkinsfile / Helm chart</text>
+        <text x="52" y="152" class="text">Trigger: manual build or SCM polling</text>
+
+        <text x="335" y="36" class="title">2. CI Orchestration Layer</text>
+        <rect x="335" y="55" width="360" height="260" class="box" fill="#e9f9ee"/>
+        <text x="355" y="88" class="label">Jenkins Server on AWS EC2</text>
+        <text x="355" y="112" class="text">Core tools: Git, Node.js, npm, Docker, AWS CLI, kubectl, Helm</text>
+        <text x="355" y="138" class="text">Credentials: AWS Credentials, SonarQube Token</text>
+        <text x="355" y="164" class="text">Stages:</text>
+        <text x="375" y="188" class="text">• Checkout SCM</text>
+        <text x="375" y="208" class="text">• Check Tools</text>
+        <text x="375" y="228" class="text">• Install Dependencies</text>
+        <text x="375" y="248" class="text">• Run Tests (Jest + jest-junit)</text>
+        <text x="375" y="268" class="text">• Build Docker Image</text>
+        <text x="375" y="288" class="text">• Push Image to Amazon ECR</text>
+
+        <text x="750" y="36" class="title">3. Code Quality & Gate Layer</text>
+        <rect x="750" y="55" width="320" height="200" class="box" fill="#fff4db"/>
+        <text x="772" y="88" class="label">SonarQube Server on AWS EC2</text>
+        <text x="772" y="112" class="text">Components: SonarQube + PostgreSQL</text>
+        <text x="772" y="136" class="text">Scan target: src + tests</text>
+        <text x="772" y="156" class="text">Quality Gate: blocks pipeline if failed</text>
+        <text x="772" y="176" class="text">Webhook: SonarQube → Jenkins</text>
+        <text x="772" y="196" class="text">Response: waitForQualityGate()</text>
+
+        <text x="1125" y="36" class="title">4. Container Registry Layer</text>
+        <rect x="1125" y="55" width="405" height="170" class="box" fill="#f4e8ff"/>
+        <text x="1148" y="88" class="label">Amazon ECR</text>
+        <text x="1148" y="112" class="text">Repository: my-nodejs-app</text>
+        <text x="1148" y="136" class="text">Tags pushed: build number + latest</text>
+        <text x="1148" y="160" class="text">Image source of truth for Kubernetes deployments</text>
+        <text x="1148" y="184" class="text">Authentication: aws ecr get-login-password</text>
+
+        <text x="30" y="380" class="title">5. CD / Kubernetes Deployment Layer</text>
+        <rect x="30" y="400" width="665" height="270" class="box" fill="#e9f9ee"/>
+        <text x="55" y="434" class="label">Amazon EKS Cluster</text>
+        <text x="55" y="458" class="text">Cluster: nodejs-lofi-walrus</text>
+        <text x="55" y="482" class="text">Deployment method: Helm release</text>
+        <text x="55" y="506" class="text">Command: helm upgrade --install my-nodejs-app ./helm/my-nodejs-app</text>
+        <text x="55" y="530" class="text">Values passed from pipeline:</text>
+        <text x="75" y="554" class="text">• image.repository = 612990353866.dkr.ecr.eu-central-1.amazonaws.com/my-nodejs-app</text>
+        <text x="75" y="578" class="text">• image.tag = BUILD_NUMBER</text>
+        <text x="55" y="602" class="text">Helm creates / manages:</text>
+        <text x="75" y="626" class="text">• Kubernetes Deployment</text>
+        <text x="75" y="646" class="text">• Kubernetes Service (LoadBalancer)</text>
+
+        <rect x="735" y="400" width="380" height="270" class="box" fill="#e0ecff"/>
+        <text x="758" y="434" class="label">Helm Chart Package</text>
+        <text x="758" y="458" class="text">Path: helm/my-nodejs-app</text>
+        <text x="758" y="482" class="text">Files:</text>
+        <text x="778" y="506" class="text">• Chart.yaml</text>
+        <text x="778" y="526" class="text">• values.yaml</text>
+        <text x="778" y="546" class="text">• templates/deployment.yaml</text>
+        <text x="778" y="566" class="text">• templates/service.yaml</text>
+        <text x="778" y="586" class="text">• templates/_helpers.tpl</text>
+        <text x="758" y="618" class="text">Benefits:</text>
+        <text x="778" y="642" class="text">• release tracking</text>
+        <text x="778" y="662" class="text">• easier upgrades / rollbacks</text>
+
+        <rect x="1155" y="400" width="375" height="270" class="box" fill="#fff4db"/>
+        <text x="1178" y="434" class="label">Runtime Workload</text>
+        <text x="1178" y="458" class="text">Kubernetes Nodes (EC2 worker nodes)</text>
+        <text x="1178" y="482" class="text">Pod runs Node.js application container</text>
+        <text x="1178" y="506" class="text">Service type: LoadBalancer</text>
+        <text x="1178" y="530" class="text">Traffic flow:</text>
+        <text x="1198" y="554" class="text">Internet → AWS Load Balancer → Service → Pod</text>
+        <text x="1178" y="586" class="text">Image pull source: Amazon ECR</text>
+
+        <text x="30" y="730" class="title">6. Security, Access & Operational Requirements</text>
+        <rect x="30" y="750" width="1500" height="90" class="box" fill="#f8fafc"/>
+        <text x="50" y="780" class="text">IAM / Access: Jenkins AWS credentials, ECR push permissions, EKS access entry or cluster access policy, SonarQube token, GitHub repository access.</text>
+        <text x="50" y="804" class="text">Network / Infra: Jenkins EC2, SonarQube EC2, EKS control plane + worker nodes, security groups for 8080/9000/SSH, outbound internet access for package installs and registry access.</text>
+        <text x="50" y="828" class="text">Tooling requirements: Java for Jenkins/SonarQube, Node.js/npm, Docker daemon running, AWS CLI v2, kubectl, Helm 3, SonarQube webhook configured to Jenkins.</text>
+
+        <path class="arrow" d="M280 120 L335 120" />
+        <path class="arrow" d="M695 140 L750 140" />
+        <path class="arrow" d="M1070 140 L1125 140" />
+        <path class="arrow" d="M1230 225 L1230 340 L1020 340 L1020 400" />
+        <path class="arrow" d="M515 315 L515 360 L360 360 L360 400" />
+        <path class="arrow" d="M1115 535 L1155 535" />
+        <path class="arrow dashed" d="M910 255 L910 315 L520 315" />
+        <path class="arrow dashed" d="M885 670 L885 705" />
+
+        <text x="567" y="350" class="small">Helm deploy after image push</text>
+        <text x="785" y="302" class="small">Webhook / quality gate response</text>
+        <text x="1240" y="360" class="small">ECR image pulled by EKS workload</text>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item c1">Source / Runtime / Kubernetes Context</div>
+      <div class="legend-item c2">CI/CD Orchestration & Deployment</div>
+      <div class="legend-item c3">Quality & Validation Controls</div>
+      <div class="legend-item c4">Registry / Artifact Storage</div>
+    </div>
+
+    <div class="grid" style="margin-top:20px;">
+      <div class="card panel">
+        <h2>Pipeline Stages</h2>
+        <ul>
+          <li><strong>Checkout SCM:</strong> Jenkins pulls source code, Jenkinsfile, Dockerfile, and Helm chart from GitHub.</li>
+          <li><strong>Check Tools:</strong> Validates runtime dependencies on Jenkins agent: Node.js, npm, Docker, AWS CLI, kubectl, Helm.</li>
+          <li><strong>Install Dependencies:</strong> Runs <code>npm install</code> inside <code>Nodejs App</code>.</li>
+          <li><strong>Run Tests:</strong> Executes Jest test suite and JUnit-style reporting.</li>
+          <li><strong>SonarQube Scan:</strong> Sends source code and test metadata to SonarQube for static analysis.</li>
+          <li><strong>Quality Gate:</strong> Jenkins waits until SonarQube returns pass/fail status through webhook.</li>
+          <li><strong>Build Docker Image:</strong> Builds application image and tags it with build number and <code>latest</code>.</li>
+          <li><strong>Push to ECR:</strong> Authenticates to Amazon ECR and pushes versioned image artifacts.</li>
+          <li><strong>Deploy to EKS with Helm:</strong> Updates kubeconfig, validates chart, installs or upgrades Helm release.</li>
+        </ul>
+      </div>
+
+      <div class="card panel">
+        <h2>Professional Requirements & Best Practices</h2>
+        <ul>
+          <li>Use separate EC2 instances for Jenkins and SonarQube to isolate workloads.</li>
+          <li>Store AWS and SonarQube credentials in Jenkins Credentials, not in source code.</li>
+          <li>Use ECR as the only trusted image source for Kubernetes deployments.</li>
+          <li>Prefer Helm over raw <code>kubectl create/set image/expose</code> for packaging, upgrades, and rollback readiness.</li>
+          <li>Use SonarQube Quality Gate as a deployment blocker so only validated code reaches EKS.</li>
+          <li>Keep Helm chart version-controlled inside the repository.</li>
+          <li>Next-level enhancements: separate dev/stage/prod values files, ingress, TLS, monitoring, rollback strategy, and GitOps.</li>
+        </ul>
+        <div class="footer">This diagram reflects your current working architecture after migrating Kubernetes deployment from raw kubectl commands to Helm-managed releases.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
