@@ -4,6 +4,9 @@
 
 This project demonstrates a **production-style CI/CD pipeline** for a Node.js application using modern DevOps tools and AWS services.
 
+![Architecture Diagram](diagram/diagram-image.png)
+
+
 The pipeline automates:
 
 * Code build and testing
@@ -20,7 +23,11 @@ The pipeline automates:
 GitHub → Jenkins → Test → SonarQube → Quality Gate → Docker → ECR → EKS (Helm)
 ```
 
-![Architecture Diagram](diagram/diagram-image.png)
+## 🖥️ Software Demo
+
+Watch this project in action:
+
+[![Software Demo ▶️](https://img.youtube.com/vi/Kie-Fp-9n0I/maxresdefault.jpg)](https://youtu.be/Kie-Fp-9n0I)
 
 
 ---
